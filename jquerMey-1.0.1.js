@@ -52,6 +52,7 @@
     if (!noGlobal) {
         //BOM一定有window对象
         // jQuery一定是核心对象
+        //所以平时用的$其实是在此处定义的
         window.jQuery = window.$ = jQuery;
     }
     return jQuery;
