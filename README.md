@@ -1,7 +1,3 @@
-### JQ源码解析
-现在的工作开发偶尔会用到jquery，忙中偷闲分析一下JQ的源码。
-> 纸上得来终觉浅，绝知此事要躬行
-所以，一步步码起来
 首先，我们先去官网把JQ的js相关文件download到本地，一步步看着源码，仿照写法，一步步实现并且理解jq的原理。
 
 接着创建一个属于自己的js文件(取名为jquerMey-1.0.1js)。
@@ -21,7 +17,7 @@
 好的，开搞吧！
 
 首先创立一个html文件，如图：
-
+```
 <!DOCTYPE html>
  <html lang="en">
   <head>
@@ -42,12 +38,12 @@
   </script>
 </body>
 </html>
- 
+```
 
 可以看到，这边jQuery.fn.init 输出的是一个数组，还有一系列方法。我们一步步来。
 
 这边先把JQ源码的所有东西都先删一下，可以看到，定义一个匿名函数，创建闭包。
-
+```
 // 定义一个匿名函数，马上调用它,包起来调用的时候可以创建闭包
     (function(global,factory) {
         //内存中动态开辟了一块空间来执行这个里面的代码,对外是封闭的，可以访问外面的变量
@@ -55,8 +51,9 @@
          /*这里的三元判断，除了BOM浏览器的运行环境还能运行在什么环境中？ =>node环境 (node运行在V8引擎中，主要用来做中间件) 
          中间件很多，架构与部署方面的中间件：webpack，grunt，gulp；功能方面的中间件：node.js（页面静态化） */
     }));
+```
 好，接着分析
-
+```
 // 定义一个匿名函数，马上调用它,包起来调用的时候可以创建闭包
     (function (global, factory) {
         //内存中动态开辟了一块空间来执行这个里面的代码,对外是封闭的，可以访问外面的变量
@@ -79,6 +76,7 @@
         }
     }(typeof window !== "undefined" ? window : this, function (window, noGlobal) {
     }));
+```    
 写到这里，那么这里注释说的CommonJS是什么呢？这就涉及到了上面说的node了。
 
 CommonJS是nodejs也就是服务器端广泛使用的模块化机制。 该规范的主要内容是，模块必须通过module.exports 导出对外的变量或接口，通过 require() 来导入其他模块的输出到当前模块作用域中。
@@ -94,7 +92,7 @@ CommonJS是nodejs也就是服务器端广泛使用的模块化机制。 该规�
 
 
 往下看，可以看到这里jQuery的fn对象其实就是jQuery的原型对象，平时我们用jq，$.fn.chang = function(){},也可以写成$.prototype.chang = function(){};接着我们找到init方法。
-
+```
  jQuery.fn = jQuery.prototype = {
         init : function (selector, context) {
             return jQuery.makeArray( selector, context );
@@ -104,10 +102,11 @@ CommonJS是nodejs也就是服务器端广泛使用的模块化机制。 该规�
         var $eles = new Sizzle(selector, context);
         return $eles;
     }
+```
 分析完jQuery.fn，我们看看makeArray。Sizzle.js文件里面有很多算法方面的代码，我们先跳过，继续分析代码。此时，我们用Chrome打开html代码，可以看到，输出如图：（此时还没有写addClass函数所以报错了）
 
 
-
+```
 jQuery.fn = jQuery.prototype = {
         init : function (selector, context) {
             return jQuery.makeArray( selector, context );
@@ -128,10 +127,11 @@ jQuery.fn = jQuery.prototype = {
         $eles.__proto__ = jQuery.fn
         return $eles;
     }
+```    
 继续补全，这样jQuery的 整体架构 就ok了，之后就是往里面添加东西。
 
 (比如往里面添加addClass，removeClass，each方法)
-
+```
 jQuery.fn = jQuery.prototype = {
         init : function (selector, context) {
             return jQuery.makeArray( selector, context );
@@ -153,10 +153,10 @@ jQuery.fn = jQuery.prototype = {
             })
         }
     };
- 
+ ```
 
 我们可以看到此时控制台里面已经有了我们添加的方法，让我们来实验一下。
-
+```
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,12 +196,13 @@ jQuery.fn = jQuery.prototype = {
   </script>
   </body>
 </html>
+```
 结果如图：
 
 
 
 附上全部代码：
-
+```
 /*!
  * jqueMey JavaScript Library v1.0.1
  *
@@ -282,6 +283,6 @@ jQuery.fn = jQuery.prototype = {
     }
     return jQuery;
 }));
- 
+``` 
 
 未完待续...
