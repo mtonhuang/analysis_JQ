@@ -41,10 +41,32 @@
             // Need init if jQuery is called (just allow error to be thrown if not included)
             return new jQuery.fn.init( selector, context );
         };
-    jQuery.fn = {
+    jQuery.fn = jQuery.prototype = {
         init : function (selector, context) {
-            return jQuery.makeArray( selector, this );
+            return jQuery.makeArray( selector, context );
+        },
+        each: function (func) {
+            for (var i=0;i<this.length;i++) {
+                func.call(this,i,this[i]);
+            }
+            return this;
+        },
+        addClass : function (className) {
+            return this.each(function (index, element) {
+               element.className += " " + className
+            })
+        },
+        removeClass: function (className) {
+            return this.each(function (index, element) {
+                element.className = ""
+            })
         }
+    };
+    jQuery.makeArray = function(selector, context){
+        var $eles = new Sizzle(selector, context);
+        $eles.prevObject = arguments.callee;
+        $eles.__proto__ = jQuery.fn
+        return $eles;
     }
     // Expose jQuery and $ identifiers, even in AMD
     // (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
